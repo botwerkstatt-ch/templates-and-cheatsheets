@@ -1,0 +1,197 @@
+{
+  "name": "openai-customGPT-webhook-database",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8704d26f-bc59-4ee1-a486-a6ba9a5fbc28",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -880,
+        352
+      ],
+      "id": "201e8af1-8c43-4612-8c53-d70432cf4abe",
+      "name": "Webhook",
+      "webhookId": "8704d26f-bc59-4ee1-a486-a6ba9a5fbc28"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fc2324dc-f996-4791-9822-546510405681",
+              "name": "query",
+              "value": "={{ $json.body.query }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        352
+      ],
+      "id": "b79fcc6c-6cb1-4bbc-a411-8e8720b5ea8c",
+      "name": "prepareInput"
+    },
+    {
+      "parameters": {
+        "content": "# Webhook-Integration for Custom GPT-Action\n- custom GPT: https://chatgpt.com/g/g-68da79d351f081919adcfeeab5e7e03f-ki-power-kurse-n8n-database\n- the webhook receives an optional \"query\" which can be used to further refine the search \n\n### Important:\n- replace the \"sub-workflow\"-Node with whatever data-source / data-transformation your GPT needs!",
+        "height": 304,
+        "width": 1008
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -992,
+        32
+      ],
+      "typeVersion": 1,
+      "id": "792c8112-ee73-4acf-8191-1180edff55f2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## openAI Action JSON-Schema\n\n````\n{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"course_offerings_action\",\n    \"description\": \"Retrieves current bookable courses with their metadata such as Trainers and Locations.\",\n    \"version\": \"v1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"https://n8n.bosshart.sg\"\n    }\n  ],\n  \"paths\": {\n    \"/webhook/8704d26f-bc59-4ee1-a486-a6ba9a5fbc28\": {\n      \"post\": {\n        \"description\": \"Get all course-offerings and course-details which are currently available to book\",\n        \"operationId\": \"GetCourseOfferings\",\n        \"requestBody\": {\n          \"required\": true,\n          \"content\": {\n            \"application/json\": {\n              \"schema\": {\n                \"type\": \"object\",\n                \"properties\": {\n                  \"query\": {\n                    \"type\": \"string\",\n                    \"description\": \"Course name or complete user-query to search for\"\n                  }\n                },\n                \"required\": [\"query\"]\n              }\n            }\n          }\n        },\n        \"responses\": {\n          \"200\": {\n            \"description\": \"Successful response\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"type\": \"object\",\n                  \"properties\": {\n                    \"data\": {\n                      \"type\": \"array\",\n                      \"items\": {\n                        \"type\": \"object\"\n                      }\n                    }\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {}\n  }\n}\n````\n\n## Custom GPT Prompt\n````\n# ROLLE\nDu bist der Assistent von KI Power und beantwortest Fragen zu Kursen und Schulungen.\nAnalysiere die eingehende Anfrage und verwende ausschliesslich das \"course_offerings_action\" um diese zu beantworten - erfinde keine Antworten.\nWenn die Anfrage leer ist, liefere alle verfügbaren Kurse zurück.\n\n## Allgemeine Regeln\nDeine Antworten formulierst du ausschliesslich mit Informationen aus den verfügbaren Tools! \nGehe davon aus, dass es sich bei allen Anfragen rund um Themen wie Kurse, Kurs-Daten, Kurs-Orte, Trainer oder weitere Dienstleistungen oder Basis-Informationen von KI-Power handelt.\n\nVerwende ausschliesslich die verfügbaren Informationen, um die Frage zu beantworten. Falls du die Antwort nicht kennst, antworte mit \"Leider kenne ich die Antwort nicht\".\nOrdne Kurse immer in chronologischer Reihenfolge, beginnend mit dem Datum der nächsten Durchführung.\n\n## course_offerings_action\nVerwende das course_offerings_action für alle Fragen zu Kursen:\n* Termine / Durchführungs-Daten\n* Kurs-Informationen (Beschreibung, Inhalte, Lernziele, Trainer, erforderliche Materialien, Kosten)\n* Ergänze immer die Verlinkung zur Kurs-Seite.\n* Biete pro-aktiv die Möglichkeit zur direkten Anmeldung an.\n\n### Informationen und Links zu Kursen\nWenn die Antwort einen oder mehrere Kurse erwähnt, liefere die Angaben zum Kurs immer wie im nachfolgenden Beispiel  mit dem korrekten Link zur Kurs-Seite.\nDer Link setzt sich wie folgt zusammen: 'https://ki-power.ch/kurse/' + URL-Segment aus dem Feld '{slug}'.\n\nBeispiel:\n### KI für alle – Basiskurs für Alltag und Beruf (29.09.2025)\n* ChatGPT & Co. im Alltag und im Beruf gewinnbringend einsetzen – Fokus auf praktische Anwendung und eigenes Ausprobieren.\n* Trainer: Antonia Zahner (KI Expertin Marketing & Kommunikation)\n* Kursort: Akademie Sichtweisen, Webergasse 15, 9000 St. Gallen\n* 13:30 bis 17:30 Uhr (4 Stunden)\n\n[weitere Informationen](https://ki-power.ch/kurse/vibe-coding-von-idee-zum-prototyp)\n\n\n## erweiterter Kontext\n* stelle sicher, dass Links immer in gültiger Markdown-Syntax erstellt werden, zB (Link-Text)[www.ki-power.ch].\n* Schreibe immer mit Schweizer Tastatur in helvetischer Schreibweise, verwende Standarddeutsch mit Schweizer Grammatik und Rechtschreibereform (2006).\n````",
+        "height": 1120,
+        "width": 1104,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1584,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "3aab2f29-64e9-482f-9ae0-52961ca593bc",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "kZSwmefNoBTS91iW",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/kZSwmefNoBTS91iW",
+          "cachedResultName": "rag-sub-get-courseofferings"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {}
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -288,
+        352
+      ],
+      "id": "ea7d4a59-fbf4-44ac-8dae-994fa8d340c5",
+      "name": "sub-workflow"
+    },
+    {
+      "parameters": {
+        "content": "## Custom GPT Prompt\n````\n# ROLLE\nDu bist der Assistent von KI Power und beantwortest Fragen zu Kursen und Schulungen.\nAnalysiere die eingehende Anfrage und verwende ausschliesslich das \"course_offerings_action\" um diese zu beantworten - erfinde keine Antworten.\nWenn die Anfrage leer ist, liefere alle verfügbaren Kurse zurück.\n\n## Allgemeine Regeln\nDeine Antworten formulierst du ausschliesslich mit Informationen aus den verfügbaren Tools! \nGehe davon aus, dass es sich bei allen Anfragen rund um Themen wie Kurse, Kurs-Daten, Kurs-Orte, Trainer oder weitere Dienstleistungen oder Basis-Informationen von KI-Power handelt.\n\nVerwende ausschliesslich die verfügbaren Informationen, um die Frage zu beantworten. Falls du die Antwort nicht kennst, antworte mit \"Leider kenne ich die Antwort nicht\".\nOrdne Kurse immer in chronologischer Reihenfolge, beginnend mit dem Datum der nächsten Durchführung.\n\n## course_offerings_action\nVerwende das course_offerings_action für alle Fragen zu Kursen:\n* Termine / Durchführungs-Daten\n* Kurs-Informationen (Beschreibung, Inhalte, Lernziele, Trainer, erforderliche Materialien, Kosten)\n* Ergänze immer die Verlinkung zur Kurs-Seite.\n* Biete pro-aktiv die Möglichkeit zur direkten Anmeldung an.\n\n### Informationen und Links zu Kursen\nWenn die Antwort einen oder mehrere Kurse erwähnt, liefere die Angaben zum Kurs immer wie im nachfolgenden Beispiel  mit dem korrekten Link zur Kurs-Seite.\nDer Link setzt sich wie folgt zusammen: 'https://ki-power.ch/kurse/' + URL-Segment aus dem Feld '{slug}'.\n\nBeispiel:\n### KI für alle – Basiskurs für Alltag und Beruf (29.09.2025)\n* ChatGPT & Co. im Alltag und im Beruf gewinnbringend einsetzen – Fokus auf praktische Anwendung und eigenes Ausprobieren.\n* Trainer: Antonia Zahner (KI Expertin Marketing & Kommunikation)\n* Kursort: Akademie Sichtweisen, Webergasse 15, 9000 St. Gallen\n* 13:30 bis 17:30 Uhr (4 Stunden)\n\n[weitere Informationen](https://ki-power.ch/kurse/vibe-coding-von-idee-zum-prototyp)\n\n\n## erweiterter Kontext\n* stelle sicher, dass Links immer in gültiger Markdown-Syntax erstellt werden, zB (Link-Text)[www.ki-power.ch].\n* Schreibe immer mit Schweizer Tastatur in helvetischer Schreibweise, verwende Standarddeutsch mit Schweizer Grammatik und Rechtschreibereform (2006).\n````",
+        "height": 1120,
+        "width": 1104,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        544
+      ],
+      "typeVersion": 1,
+      "id": "e087ecca-b4f9-4974-8df8-bc022673f6be",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.bosshart.sg",
+            "user-agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot",
+            "content-length": "2",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br",
+            "content-type": "application/json",
+            "openai-conversation-id": "25103feb-ac87-5372-89fd-741999bf5986",
+            "openai-ephemeral-user-id": "c3fe1fbe-866a-59fd-aff0-d4c2e358803d",
+            "openai-gpt-id": "g-68da79d351f081919adcfeeab5e7e03f",
+            "traceparent": "00-68da7a4a000000001c89875ed0df43ff-89324a97c4bc64f6-00",
+            "tracestate": "dd=s:-1;p:1d597631ca0c966a;t.dm:-3",
+            "via": "1.1 Caddy",
+            "x-datadog-parent-id": "15024383440987746615",
+            "x-datadog-sampling-priority": "-1",
+            "x-datadog-tags": "_dd.p.tid=68da7a4a00000000,_dd.p.dm=-3",
+            "x-datadog-trace-id": "2056323546172310527",
+            "x-forwarded-for": "74.7.36.94",
+            "x-forwarded-host": "n8n.bosshart.sg",
+            "x-forwarded-proto": "https"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.bosshart.sg/webhook/8704d26f-bc59-4ee1-a486-a6ba9a5fbc28",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "prepareInput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prepareInput": {
+      "main": [
+        [
+          {
+            "node": "sub-workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sub-workflow": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c0980a67-8608-49b0-825f-dfeb53a421f3",
+  "meta": {
+    "instanceId": "7000b643921dab8bd21fd7fd625975bff66c2abcec80f5b011797753216c8f46"
+  },
+  "id": "PvqrLMrtfClhbTly",
+  "tags": [
+    {
+      "name": "exported",
+      "id": "0qV2Yo89UD8zeCBT",
+      "createdAt": "2025-09-29T14:53:06.730Z",
+      "updatedAt": "2025-09-29T14:53:06.730Z"
+    }
+  ]
+}
