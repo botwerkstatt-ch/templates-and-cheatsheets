@@ -1,0 +1,120 @@
+{
+  "name": "APERTUS-Swisscom-AI-platform",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        48
+      ],
+      "id": "a2f9afe3-e7a7-41e3-b380-601e30ba7996",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "What is 2 + 2?",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a helpful assistant."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        16,
+        48
+      ],
+      "id": "82f851fe-86db-4c1f-80f7-24fb85d13988",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "content": "# Swisscom AI Platform\n\nsee also https://digital.swisscom.com/products/swiss-ai-platform/info\n\n## How to get started\nGetting started with our Inference Endpoints is simple and straightforward. Follow these steps to integrate powerful AI models into your solutions:\n\n\n### n8n-credentials\n- use the openAI node\n- add the API Key from your personal Hacker Profile\n- use this Base URL:  https://api.swisscom.com/layer/swiss-ai-weeks/apertus-70b/v1\n- use the Model `swiss-ai/Apertus-70B`\n- you're good to go!",
+        "height": 512,
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        368,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "813b9981-fdd3-4363-80e6-7f21b9e14775",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "swiss-ai/Apertus-70B",
+          "mode": "list",
+          "cachedResultName": "swiss-ai/Apertus-70B"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        304
+      ],
+      "id": "c948d2d4-82e8-4f48-893b-60a1b96c6e4d",
+      "name": "Apertus",
+      "credentials": {
+        "openAiApi": {
+          "id": "sknLhDZ77GWHii30",
+          "name": "Swisscom-AI-Platform"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apertus": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b70daa8c-fd96-4a5e-9959-0185420b7c91",
+  "meta": {
+    "instanceId": "7000b643921dab8bd21fd7fd625975bff66c2abcec80f5b011797753216c8f46"
+  },
+  "id": "lKjYbQTok0zhY5wQ",
+  "tags": [
+    {
+      "name": "exported",
+      "id": "0qV2Yo89UD8zeCBT",
+      "createdAt": "2025-09-29T14:53:06.730Z",
+      "updatedAt": "2025-09-29T14:53:06.730Z"
+    }
+  ]
+}
