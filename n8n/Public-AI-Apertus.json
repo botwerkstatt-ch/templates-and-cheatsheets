@@ -1,0 +1,113 @@
+{
+  "name": "Public-AI-Apertus",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        48
+      ],
+      "id": "47c61ce6-af49-4bdf-a5e2-553b2888166d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "What is 2 + 2?",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a helpful assistant."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        16,
+        48
+      ],
+      "id": "649e7713-f110-48d5-8cb2-7c7e2200d0f5",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "content": "# Public AI Apertus\n\n- sign in on https://platform.publicai.co/docs\n- get your API-Key: https://platform.publicai.co/settings/api-keys\n\n### n8n-credentials\n- use the openAI credentials for Public AI\n- add your API Key\n- use this Base URL:  `https://api.publicai.co/v1`\n- set a custom User-Agent-Header (see https://platform.publicai.co/docs#authentication) \n\n![credential-settings](https://raw.githubusercontent.com/botwerkstatt-ch/templates-and-cheatsheets/refs/heads/main/n8n/images/public-AI-apertus.png)\n\n\n- you're good to go!",
+        "height": 1120,
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        384,
+        -432
+      ],
+      "typeVersion": 1,
+      "id": "021247d1-4576-4d1d-9684-eacad3d51659",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "swiss-ai/apertus-70b-instruct",
+          "mode": "list",
+          "cachedResultName": "swiss-ai/apertus-70b-instruct"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        304
+      ],
+      "id": "5331b0fa-6062-4e37-9be3-26779d7d50d5",
+      "name": "Apertus",
+      "credentials": {
+        "openAiApi": {
+          "id": "IjnRxaGUPg6ka7Zy",
+          "name": "public AI (Apertus v2)"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apertus": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6ea6dcff-a5ef-4da7-acd1-a97357b7427a",
+  "meta": {
+    "instanceId": "7000b643921dab8bd21fd7fd625975bff66c2abcec80f5b011797753216c8f46"
+  },
+  "id": "ZImPEqt2ZV5CsPaf",
+  "tags": []
+}
