@@ -1,0 +1,334 @@
+{
+  "name": "openAI-assistant-RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {
+          "allowedOrigins": "*",
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "8e146169-1f7b-48f3-923f-4464997e1978",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        608,
+        192
+      ],
+      "webhookId": "2a82e0f2-bea4-4ee9-b66d-420d175538ca",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# n8n-Chat mit einem GPT-Assistenten\n\n## Voraussetzung\n- API-Key eines bezahlten openAI-Accounts\n- eine n8n-Datatable mit den Spalten `sessionId`, `threadId`\n\n\n\n## 1️⃣  Erstelle einen Assistenten unter https://platform.openai.com/assistants\n- lade die relevanten Wissens-Dateien für Deinen Assistenten im openAI Web-Interface hoch\n- erlaube deinem Assistenten die Verwendung von \"File Search\" \n- wähle ein passendes Modell, zB gpt-4o\n\n## 2️⃣  Verbinde den Assistenten mit dem openAI-Assistant-Node\n- wähle den Assistant im Dropdown aus\n- passe den Systemprompt an\n- testen: zB \"Welche Berufskosten lassen sich abziehen?\"\n- Analyse der Anfrage via \"Threads\" im entsprechenden openAI-Assistant\n\n![steuer-bot](https://raw.githubusercontent.com/botwerkstatt-ch/templates-and-cheatsheets/refs/heads/main/n8n/images/steuerbot.png)",
+        "height": 1553,
+        "width": 1130,
+        "color": 4
+      },
+      "id": "cb31ebb6-8cb3-432d-ad78-78fceeca502d",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        -400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5b980c03-d0c2-4946-8967-d38c839e4b71",
+              "name": "output",
+              "value": "={{ $json.messages}}",
+              "type": "string"
+            },
+            {
+              "id": "7d89a6e1-a8d2-4ea0-81bc-126f9d775201",
+              "name": "threadId",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2032,
+        240
+      ],
+      "id": "33b39c07-2dfc-4895-8e3e-5daee1ddce93",
+      "name": "setFinalResponse"
+    },
+    {
+      "parameters": {
+        "resource": "assistant",
+        "assistantId": {
+          "__rl": true,
+          "value": "asst_8BV1KEj1r1Y4msDuoJwcDsLA",
+          "mode": "list",
+          "cachedResultName": "steuerbot"
+        },
+        "prompt": "define",
+        "text": "={{ $json.chatInput }}\nZeitlicher Kontext für die Anfrage:  {{ $now.toLocal().format('cccc DDD HH:mm')}}.\n",
+        "memory": "threadId",
+        "threadId": "={{ $json.threadId }}",
+        "options": {
+          "maxRetries": 4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1424,
+        208
+      ],
+      "id": "b131ae43-a28a-4448-9350-901502f898ad",
+      "name": "openAI-Assistant",
+      "credentials": {
+        "openAiApi": {
+          "id": "RMlTZ1OyZEHJNLh8",
+          "name": "default-openAI-NBO"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1152,
+        208
+      ],
+      "id": "41a53463-3f44-42dc-8285-a172919a2c76",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ozb1UGRAUkTm4hyd",
+          "mode": "list",
+          "cachedResultName": "openai-assistant-thread-ids",
+          "cachedResultUrl": "/projects/VklmsafdhUQy9k7f/datatables/Ozb1UGRAUkTm4hyd"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sessionId",
+              "keyValue": "={{ $('Chat Trigger').item.json.sessionId }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        848,
+        576
+      ],
+      "id": "6973a252-eec0-451c-9590-0c30d4808a11",
+      "name": "checkThread",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Ozb1UGRAUkTm4hyd",
+          "mode": "list",
+          "cachedResultName": "openai-assistant-thread-ids",
+          "cachedResultUrl": "/projects/VklmsafdhUQy9k7f/datatables/Ozb1UGRAUkTm4hyd"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "sessionId",
+              "keyValue": "={{ $('Chat Trigger').item.json.sessionId }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "threadId": "={{ $json.threadId }}",
+            "sessionId": "={{ $('Chat Trigger').item.json.sessionId }}"
+          },
+          "matchingColumns": [
+            "threadId"
+          ],
+          "schema": [
+            {
+              "id": "threadId",
+              "displayName": "threadId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "messages",
+              "displayName": "messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        560
+      ],
+      "id": "8af68687-6001-4623-97c6-32af228fa193",
+      "name": "updateThread"
+    },
+    {
+      "parameters": {
+        "content": "## Thread-Management\n- wird eine neue Anfrage gestartet, wird die openAI threadId mit der Chat-SessionId gespeichert.\n- weitere Anfragen mit der gleichen Chat-SessionId werden im gleichen Thread geführt.\n- benötigte Spalten in der Tabelle `sessionId`, `threadId`\n",
+        "height": 176,
+        "width": 672
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        560
+      ],
+      "typeVersion": 1,
+      "id": "354d1337-eb52-4d8e-b8cd-2a18b439a235",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## openAI Assistant Systemprompt\n\n````\nDu bist ein virtueller Steuerberater des kantonalen Steueramtes St.Gallen. Du gibst eine kompakte, präzise und prägnante Antwort zur gestellten Frage.\n\nDeine Antworten holst du ausschliesslich aus der Wegleitung zur Steuererklärung (File Search Tool).\nGehe davon aus, dass es sich bei allen Anfragen um Themen rund um das Ausfüllen einer Steuererklärung für natürliche Personen (Privatpersonen) handelt.\nVerwende ausschliesslich die verfügbaren Informationen, um die Frage zu beantworten. Falls du die Antwort nicht kennst, gib an, dass du es nicht weisst, und versuche nicht, eine Antwort zu erfinden. \nDu schlägst ausschliesslich Inhalte aus den vorhandenen Datei-Informationen vor.\n\nDu antwortest ausschliesslich mit Inhalten aus deiner Wissensdatenbank, oder von der Website https://www.sg.ch/steuern-finanzen.html unpassende Anfragen oder ethisch moralisch bedenkliche Anfragen lehnst du höflich ab!\n**Emojis:** Verwende relevante Emojis strategisch, um Emotionen zu unterstreichen und die Struktur zu betonen.\n- **Schreibstil:** \nSchreibe mit Schweizer Tastatur in helvetischer Schreibweise, verwende Standarddeutsch mit Schweizer Grammatik und Rechtschreibereform (2006) und Duze.\n````",
+        "height": 368,
+        "width": 1216,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "5dc4775f-5a84-4080-ad04-92be79a736d7",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "checkThread",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "openAI-Assistant": {
+      "main": [
+        [
+          {
+            "node": "updateThread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setFinalResponse": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "openAI-Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkThread": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "updateThread": {
+      "main": [
+        [
+          {
+            "node": "setFinalResponse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ef70df4c-49d3-464f-831a-a5e7f4859772",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7000b643921dab8bd21fd7fd625975bff66c2abcec80f5b011797753216c8f46"
+  },
+  "id": "eAx7eC6bxItrq0sU",
+  "tags": [
+    {
+      "name": "exported",
+      "id": "0qV2Yo89UD8zeCBT",
+      "createdAt": "2025-09-29T14:53:06.730Z",
+      "updatedAt": "2025-09-29T14:53:06.730Z"
+    }
+  ]
+}
