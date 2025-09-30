@@ -1,8 +1,25 @@
 # Templates & Cheat-Sheets for the Botwerkstatt-Hackathon
 
 ## What you'll find here
-- some Kickstart-Templates for the tools we endorse at the Botwerkstatt-Hackathon
-- Cheat-Sheets
+
+- [What tools can I use / How do I use them?](#what-tools-can-i-use--how-do-i-use-them)
+- [Overview of tool access offered](#overview-of-tool-access-offered)
+- [Access to n8n](#access-to-n8n)
+    - [How to Get Started](#how-to-get-started)
+- [Access to ElevenLabs](#access-to-elevenlabs)
+    - [How to Get Started](#how-to-get-started-1)
+    - [Included: Agents Platform](#included-agents-platform)
+    - [Included: Additional APIs](#included-additional-apis)
+    - [Cheatsheet](#cheatsheet)
+- [Apertus API access on Swisscom AI Platform](#apertus-api-access-on-swisscom-ai-platform)
+    - [1. Obtain your personal API Key](#1-obtain-your-personal-api-key)
+    - [2. Set up your API Key (recommended)](#2-set-up-your-api-key-recommended)
+    - [3. Requesting your first answer from Apertus 70B](#3-requesting-your-first-answer-from-apertus-70b)
+- [Hugging Face Enterprise incl. compute credits](#hugging-face-enterprise-incl-compute-credits)
+    - [How to Get Started](#how-to-get-started-2)
+- [Access to Supertext](#access-to-supertext)
+    - [How to Get Started](#how-to-get-started-3)
+    - [Disclaimer / exclusion](#disclaimer--exclusion)
 
 
 ## What tools can I use / How do I use them?
