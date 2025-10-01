@@ -50,8 +50,8 @@ Every Team participating at BotWerkstatt can use **n8n Cloud Pro for free**.
 - Wait for Your Workspace to become ready
 - From Your Instance click on “Upgrade Now”
     - Choose the “Pro”-Plan
-    - Use the Voucher assigned to your Team
-- Please DO NOT use mutiple Vouchers within the same Team
+    - Use the Voucher: BOTWERKSTATT-136A8911  
+- Please DO NOT use mutiple Vouchers per person (50 vouchers available, use wisely)
 
 
 
